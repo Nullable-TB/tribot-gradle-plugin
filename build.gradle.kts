@@ -38,7 +38,7 @@ publishing {
             url = uri("https://gitlab.com/api/v4/projects/22245399/packages/maven")
             credentials(HttpHeaderCredentials::class.java) {
                 name = "Private-Token"
-                value = "Wtj5U5yvMckswvCKHzQJ"
+                value = System.getProperty("GITLAB_KEY")
             }
             authentication {
                 create<HttpHeaderAuthentication>("header")
