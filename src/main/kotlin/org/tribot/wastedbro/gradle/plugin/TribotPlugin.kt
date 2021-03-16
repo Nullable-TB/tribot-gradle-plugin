@@ -28,8 +28,7 @@ class TribotPlugin : Plugin<Project> {
             task.onlyIf {
                 project.tasks
                     .filter { it.name == "compileJava" || it.name == "compileKotlin" }
-                    .map { it.didWork }
-                    .any { it }
+                    .any { it.didWork }
             }
 
             task.doLast {
@@ -74,8 +73,7 @@ class TribotPlugin : Plugin<Project> {
             task.onlyIf {
                 project.tasks
                     .filter { it.name == "compileJava" || it.name == "compileKotlin" }
-                    .map { it.didWork }
-                    .any { it }
+                    .any { it.didWork }
             }
 
             task.doLast {
