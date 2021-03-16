@@ -24,6 +24,14 @@ class TribotPlugin : Plugin<Project> {
 
         project.tasks.create("repoPackage") { task ->
             task.group = "tribot"
+
+            task.onlyIf {
+                project.tasks
+                    .filter { it.name == "compileJava" || it.name == "compileKotlin" }
+                    .map { it.didWork }
+                    .any { it }
+            }
+
             task.doLast {
 
                 val projectDir = project.projectDir
@@ -62,6 +70,14 @@ class TribotPlugin : Plugin<Project> {
 
         project.tasks.create("copyToBin") { task ->
             task.group = "tribot"
+
+            task.onlyIf {
+                project.tasks
+                    .filter { it.name == "compileJava" || it.name == "compileKotlin" }
+                    .map { it.didWork }
+                    .any { it }
+            }
+
             task.doLast {
 
                 val projectDir = project.projectDir
