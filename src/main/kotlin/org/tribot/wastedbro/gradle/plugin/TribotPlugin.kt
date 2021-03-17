@@ -9,6 +9,9 @@ import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
 import java.io.File
 
 class TribotPlugin : Plugin<Project> {
+    companion object {
+        val lock = Object()
+    }
 
     override fun apply(project: Project) {
         project.pluginManager.apply("java")
@@ -97,6 +100,45 @@ class TribotPlugin : Plugin<Project> {
                         }
                     }
                 }
+            }
+        }
+
+        project.tasks.create("copyClassesToBin") { task ->
+            task.group = "tribot"
+
+            task.doLast {
+
+                val projectDir = project.projectDir
+                val dirsToPackage = mutableListOf(
+                    projectDir.resolve("build/classes/java/main"),
+                    projectDir.resolve("build/classes/kotlin/main")
+                )
+
+                fun getDependenciesRecursive(config: Configuration?, dirs: MutableList<File>): Unit? =
+                    config?.dependencies
+                        ?.mapNotNull { it as? DefaultProjectDependency }
+                        ?.forEach { d ->
+                            dirs += d.dependencyProject.projectDir.resolve("build/classes/java/main")
+                            dirs += d.dependencyProject.projectDir.resolve("build/classes/kotlin/main")
+                            getDependenciesRecursive(d.dependencyProject.configurations.asMap["implementation"], dirs)
+                        }
+
+                getDependenciesRecursive(project.configurations.asMap["implementation"], dirsToPackage)
+
+                getTribotDirectory()
+                    ?.resolve("bin")
+                    ?.also { tribotBinDir ->
+                        tribotBinDir.mkdirs()
+
+                        dirsToPackage.filter { it.exists() }.distinctBy { it.canonicalPath }.forEach {
+                            synchronized(lock) {
+                                it.copyRecursively(
+                                    tribotBinDir,
+                                    overwrite = true
+                                )
+                            }
+                        }
+                    }
             }
         }
     }
