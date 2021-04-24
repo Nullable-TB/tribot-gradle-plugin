@@ -104,7 +104,7 @@ class TribotPlugin : Plugin<Project> {
             }
         }
 
-        project.tasks.create("copyClassesToBin") { task ->
+        project.tasks.create("copyResourcesToBin") { task ->
             task.group = "tribot"
 
             task.doLast {
@@ -141,7 +141,7 @@ class TribotPlugin : Plugin<Project> {
             }
         }
         
-        project.tasks.create("copyResourcesToBin") { task ->
+        project.tasks.create("copyClassesToBin") { task ->
             task.group = "tribot"
 
             task.doLast {
